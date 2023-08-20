@@ -7,19 +7,21 @@ fn main() {
         println!("Provide the name of the event, e.g. Test::Created");
         return;
     }
-    let name = &args[1];
-    let hash = encoded_into_hash(&PrefixedValue {
+    println!("{}", event_hash(&args[1]))
+}
+
+fn event_hash(name: &String) -> String {
+    hex(encoded_into_hash(&PrefixedValue {
         value: &name.as_bytes(),
         prefix: b"",
-    })
-    .clone();
-    println!(
-        "{}",
-        hash.as_ref()
-            .iter()
-            .map(|x| format!("{:02x}", x))
-            .collect::<String>()
-    )
+    }))
+}
+
+fn hex(hash: Hash) -> String {
+    hash.as_ref()
+        .iter()
+        .map(|x| format!("{:02x}", x))
+        .collect::<String>()
 }
 
 fn encoded_into_hash<T>(entity: &T) -> Hash
@@ -57,5 +59,22 @@ impl scale::Encode for PrefixedValue<'_, '_> {
     fn encode_to<T: scale::Output + ?Sized>(&self, dest: &mut T) {
         self.prefix.encode_to(dest);
         dest.write(self.value);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_events() {
+        assert_eq!(
+            "0045726332303a3a5472616e7366657200000000000000000000000000000000",
+            event_hash(&"Erc20::Transfer".to_string())
+        );
+        assert_eq!(
+            "00546573743a3a43726561746564000000000000000000000000000000000000",
+            event_hash(&"Test::Created".to_string())
+        );
     }
 }

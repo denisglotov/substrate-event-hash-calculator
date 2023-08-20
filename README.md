@@ -1,6 +1,8 @@
 Substrate event hash calculator
 ===============================
 
+![Build status](https://github.com/denisglotov/substrate-event-hash-calculator/actions/workflows/rust.yml/badge.svg)
+
 Substrate event is identified with the value from `Topic[0]`.
 
 Calculate it with this tool as following: `cargo run Erc20::Transfer` - will give you the id of the `#[ink(event)]` 'Transfer' of the contract impl 'Erc20'.
